@@ -1,0 +1,30 @@
+main: challengeserver.tgrcode.challenges.ChallengesImplementation
+name: ChallengesImplementation
+version: 0.0.2
+api-version: "1.13"
+commands:
+  startchallenge:
+    description: Start a challenge with the given players
+    usage: /startchallenge <types> <seed> <players, ...>
+  stopchallenge:
+    description: Stop a challenge
+    usage: /stopchallenge <id>
+  pausechallenge:
+    description: Pause a challenge
+    usage: /pausechallenge <id>
+  unpausechallenge:
+    description: Unpause a challenge
+    usage: /unpausechallenge <id>
+  inforeplay:
+    description: Get info on a replay
+    usage: /inforeplay <name>
+  playreplay:
+    description: Play a replay
+    usage: /playreplay <name>
+  downloadreplay:
+    description: Download a replay from the leaderboard
+    usage: /downloadreplay <name>
+  leavereplay:
+    description: Leave replay you are viewing
+    usage: /leavereplay
+depend: [AdvancedReplay]

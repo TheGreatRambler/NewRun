@@ -1,0 +1,9 @@
+.classpath
+.project
+.settings
+dependency-reduced-pom.xml
+target
+build
+newrun.zip
+sts.sh
+# Bin used for replay API, must be included

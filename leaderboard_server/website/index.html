@@ -1,0 +1,704 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+
+	<title>NewRun Leaderboard</title>
+	<meta name="description" content="NewRun Leaderboard">
+	<meta name="author" content="TheGreatRambler">
+
+	<!--<link rel="icon" href="/favicon.ico">-->
+	<!--<link rel="icon" href="/favicon.svg" type="image/svg+xml">-->
+	<!--<link rel="apple-touch-icon" href="/apple-touch-icon.png">-->
+
+	<!--<link rel="stylesheet" href="css/styles.css?v=1.0">-->
+
+	<link rel="stylesheet" href="css/slick.grid.css" type="text/css" />
+	<link rel="stylesheet" href="css/slick.pager.css" type="text/css" />
+	<link rel="stylesheet" href="css/jquery-ui.css" type="text/css" />
+	<link rel="stylesheet" href="css/slick.columnpicker.css" type="text/css" />
+	<link rel="stylesheet" href="css/materialize.min.css" type="text/css" />
+	<link rel="stylesheet" href="css/nouislider.css" type="text/css" />
+	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+	<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400&display=swap" rel="stylesheet" />
+
+	<style>
+		body {
+			font-family: 'Roboto', sans-serif;
+		}
+
+		.selected {
+			background: #a8b9c1 !important;
+			font-weight: bold;
+		}
+
+		.collapsible-header,
+		.collapsible-body,
+		.collapsible,
+		ul.collapsible>li {
+			margin: 0 !important;
+			;
+			border: 0 !important;
+			box-shadow: none !important;
+		}
+	</style>
+
+</head>
+
+<body>
+	<div class="row">
+		<div class="col l2 m3 s3">
+			<img src="images/logo.png" class="valign-wrapper" width="100%">
+		</div>
+		<div class="col l6 m9 s8">
+			<img src="images/newrun.png" class="valign-wrapper" width="100%">
+		</div>
+		<div class="col l4 m12 s12">
+			<h6>Players Playing</h6>
+			<div style="height:200px; overflow:auto;">
+				<table id="playersOnline" class="striped">
+					<col style="width:20%">
+					<col style="width:80%">
+				</table>
+			</div>
+		</div>
+		<ul class="collapsible col s12" id="filteringContainer">
+			<li>
+				<div class="collapsible-header"><i class="material-icons">search</i>Filter</div>
+				<div class="collapsible-body"><label class="input-field col l1 m2 s12">
+						<input type="checkbox" id="doFilter">
+						<span>Filter</span>
+					</label>
+					<div class="input-field col l3 m4 s12">
+						<div class="caption">Filter Minecraft Version</div>
+						<select id="minecraftVersionFilter" multiple>
+							<option value="" disabled selected>Choose Versions</option>
+							<option value="1.7.2">1.7.2</option>
+							<option value="1.12.2">1.12.2</option>
+							<option value="1.14.4">1.14.4</option>
+							<option value="1.16.1">1.16.1</option>
+						</select>
+					</div>
+					<div class="col l3 m6 s12">
+						<div class="caption">Filter Players</div>
+						<div class="chips" id="playerFilter"></div>
+					</div>
+					<div class="col l3 m4 s12">
+						<div class="caption">Filter Gameplay Types</div>
+						<div class="chips" id="gameplayTypesFilter"></div>
+					</div>
+					<div class="input-field col l3 m4 s12">
+						<div class="caption">Filter Generation</div>
+						<select id="generationTypeFilter">
+							<option value="" disabled selected>Choose Generation</option>
+							<option value="DEFAULT">Default</option>
+							<option value="FLOATING_VILLAGES">Floating Villages</option>
+							<option value="BIOME_BUNDLE">Biome Bundle</option>
+							<option value="ERASED_CHUNKS">Erased Chunks</option>
+							<option value="AMPLIFIED">Amplified</option>
+						</select>
+					</div>
+					<label class="input-field col l2 m3 s12">
+						<input type="checkbox" id="completedFilter">
+						<span>Must Have Completed</span>
+					</label>
+					<div class="input-field col l3 m4 s12">
+						<div class="caption">Filter Seed</div>
+						<input placeholder="Seed" id="seedFilter" type="text">
+					</div>
+					<div class="input-field col l3 m4 s12">
+						<div class="caption">Uploaded Minimum</div>
+						<input class="datepicker" id="uploadedStartFilter" type="text">
+					</div>
+					<div class="input-field col l3 m4 s12">
+						<div class="caption">Uploaded Maximum</div>
+						<input class="datepicker" id="uploadedEndFilter" type="text">
+					</div>
+					<div class="col l4 m6 s12">
+						<div class="caption">Replay Length</div>
+						<div class="input-field">
+							<div id="lengthFilter"></div>
+						</div>
+					</div>
+				</div>
+			</li>
+		</ul>
+		<div class="col s12">
+			<div id="replaysGrid" style="width:100%;height:500px;"></div>
+			<div id="replaysPager" style="width:100%;height:10px;"></div>
+		</div>
+	</div>
+
+	<script src="js/firebugx.js"></script>
+	<script src="js/jquery-1.12.4.min.js"></script>
+	<script src="js/jquery-ui-1.11.3.min.js"></script>
+	<script src="js/jquery.event.drag-2.3.0.js"></script>
+	<script src="js/slick.core.js"></script>
+	<script src="js/slick.formatters.js"></script>
+	<script src="js/slick.cellrangedecorator.js"></script>
+	<script src="js/slick.cellrangeselector.js"></script>
+	<script src="js/slick.cellselectionmodel.js"></script>
+	<script src="js/slick.grid.js"></script>
+	<script src="js/slick.dataview.js"></script>
+	<script src="js/slick.pager.js"></script>
+	<script src="js/slick.columnpicker.js"></script>
+	<script src="js/slick.cellexternalcopymanager.js"></script>
+	<script src="js/materialize.min.js"></script>
+	<script src="js/nouislider.min.js"></script>
+	<script>
+		var columns = [{
+				id: "name",
+				name: "Name",
+				field: "name",
+				sortable: true,
+				width: 180
+			},
+			{
+				id: "uploaded",
+				name: "Date Uploaded",
+				field: "uploaded",
+				sortable: true,
+				formatter: function (row, cell, value, columnDef, dataContext) {
+					return new Date(value).toLocaleString();
+				},
+				width: 220
+			},
+			{
+				id: "version",
+				name: "Replay Version",
+				field: "version",
+				sortable: true
+			},
+			{
+				id: "minecraft_version",
+				name: "Minecraft Version",
+				field: "minecraft_version",
+				sortable: true
+			},
+			{
+				id: "completed",
+				name: "Completed",
+				field: "completed",
+				sortable: true,
+				width: 130
+			},
+			{
+				id: "length",
+				name: "Tick Length",
+				field: "length",
+				sortable: true,
+				width: 130
+			},
+			{
+				id: "overworld_seed",
+				name: "Seed",
+				field: "overworld_seed",
+				sortable: true
+			},
+			{
+				id: "starting_dimension",
+				name: "Starting Dimension",
+				field: "starting_dimension",
+				sortable: true
+			},
+			{
+				id: "generation_type",
+				name: "Generation Type",
+				field: "generation_type",
+				sortable: true
+			},
+			{
+				id: "players",
+				name: "Players",
+				field: "players",
+				sortable: true,
+				width: 170,
+				//formatter: function (row, cell, value, columnDef, dataContext) {
+				//	var images = "";
+				//	value.split(",").forEach(function (player_uuid) {
+				//	});
+				//	return value ? "<img src='../images/tick.png'>" : "";
+				//}
+			},
+			{
+				id: "gameplay_types",
+				name: "Gameplay Types",
+				field: "gameplay_types",
+				sortable: true,
+				width: 300
+			},
+		];
+
+		var options = {
+			editable: false,
+			enableAddRow: false,
+			enableCellNavigation: true,
+			asyncEditorLoading: true,
+			forceFitColumns: false,
+			topPanelHeight: 25,
+			enableTextSelectionOnCells: true
+		};
+
+		var data = [];
+		var cached_usernames = {};
+
+		$(function () {
+			document.getElementById("doFilter").checked = false;
+			document.getElementById("completedFilter").checked = false;
+			var selects = document.querySelectorAll("select");
+			$("option").prop("selected", false);
+			$("input").prop("value", null);
+			selects.forEach(function (select) {
+				select.addEventListener("change", function (e) {
+					select.querySelectorAll("option")[0].selected = false;
+				});
+			});
+			M.FormSelect.init(selects);
+
+			var dataView = new Slick.Data.DataView({
+				inlineFilters: true
+			});
+			var grid = new Slick.Grid("#replaysGrid", dataView, columns, options);
+
+			grid.setSelectionModel(new Slick.CellSelectionModel());
+			grid.registerPlugin(new Slick.CellExternalCopyManager({
+				readOnlyMode: true,
+				includeHeaderWhenCopying: false,
+			}));
+
+			var pager = new Slick.Controls.Pager(dataView, grid, $("#replaysPager"));
+			var columnpicker = new Slick.Controls.ColumnPicker(columns, grid, options);
+
+			grid.onCellChange.subscribe(function (e, args) {
+				dataView.updateItem(args.item.id, args.item);
+			});
+
+			grid.onSort.subscribe(function (e, args) {
+				var sortcol = args.sortCol.field;
+
+				dataView.sort(function (a, b) {
+					var x = a[sortcol];
+					var y = b[sortcol];
+					return (x == y ? 0 : (x > y ? 1 : -1));
+				}, args.sortAsc);
+			});
+
+			grid.onClick.subscribe(function (e, args) {
+				grid.focus();
+			});
+
+			dataView.onRowCountChanged.subscribe(function (e, args) {
+				grid.updateRowCount();
+				grid.render();
+			});
+
+			dataView.onRowsChanged.subscribe(function (e, args) {
+				grid.invalidateRows(args.rows);
+				grid.render();
+			});
+
+			dataView.onPagingInfoChanged.subscribe(function (e, pagingInfo) {
+				grid.updatePagingStatusFromView(pagingInfo);
+			});
+
+			var requiredPlayersUuid = new Set();
+			var filterArgs = {
+				doFilter: false,
+				allowedMinecraftVersions: new Set(),
+				requiredPlayers: new Set(),
+				requiredGameplayTypes: new Set(),
+				mustBeCompleted: false,
+				generationType: null,
+				seed: "",
+				uploadedStart: 0,
+				uploadedEnd: Infinity,
+				length: [0, 1728000]
+			};
+
+			function replayFilter(item, args) {
+				if (args.doFilter) {
+					var isValid = true;
+					if (args.allowedMinecraftVersions.size != 0) {
+						if (!args.allowedMinecraftVersions.has(item.minecraft_version)) {
+							isValid = false;
+						}
+					}
+					if (args.requiredPlayers.size != 0) {
+						var players = item.players.split(",");
+						for (var i = 0; i < players.length; i++) {
+							var player = players[i];
+							if (!args.requiredPlayers.has(player.toLowerCase())) {
+								isValid = false;
+							}
+						}
+					}
+					if (args.requiredGameplayTypes.size != 0) {
+						var gameplayTypes = item.gameplay_types.split(",");
+						var isGood = false;
+						for (var i = 0; i < gameplayTypes.length; i++) {
+							var gameplayType = gameplayTypes[i];
+							if (args.requiredGameplayTypes.has(gameplayType.toLowerCase())) {
+								isGood = true;
+							}
+						}
+						isValid = isGood;
+					}
+					if (args.mustBeCompleted) {
+						if (!item.completed) {
+							isValid = false;
+						}
+					}
+					if (args.generationType) {
+						if (item.generation_type != args.generationType) {
+							isValid = false;
+						}
+					}
+					if (args.seed.length != 0) {
+						if (!/^-?[0-9]+$/.test(args.seed)) {
+							isValid = false;
+						}
+						if (item.overworld_seed != BigInt(args.seed)) {
+							isValid = false;
+						}
+					}
+					if (item.uploaded < args.uploadedStart || item.uploaded > args.uploadedEnd) {
+						isValid = false;
+					}
+					if (item.length < args.length[0] || item.length > args.length[1]) {
+						isValid = false;
+					}
+					return isValid;
+				}
+				return true;
+			}
+
+			document.getElementById("doFilter").addEventListener("change", function (e) {
+				filterArgs.doFilter = e.target.checked;
+				dataView.refresh();
+			});
+
+			document.getElementById("completedFilter").addEventListener("change", function (e) {
+				filterArgs.mustBeCompleted = e.target.checked;
+				dataView.refresh();
+			});
+
+			document.getElementById("minecraftVersionFilter").addEventListener("change", function (e) {
+				filterArgs.allowedMinecraftVersions.clear();
+				var options = e.target.selectedOptions;
+				for (var i = 0; i < options.length; i++) {
+					filterArgs.allowedMinecraftVersions.add(options[i].value);
+				}
+				dataView.refresh();
+			});
+
+			document.getElementById("generationTypeFilter").addEventListener("change", function (e) {
+				filterArgs.generationType = e.target.value;
+				dataView.refresh();
+			});
+
+			document.getElementById("seedFilter").addEventListener("input", function (e) {
+				filterArgs.seed = e.target.value;
+				dataView.refresh();
+			});
+
+			var playerFilter = document.getElementById("playerFilter");
+			var ignoreNextPlayer = false;
+			var ignoreNextDelete = false;
+			var playerFilterInstance = M.Chips.init(playerFilter, {
+				placeholder: "Usernames",
+				onChipAdd: function (e) {
+					if (ignoreNextPlayer) {
+						ignoreNextPlayer = false;
+						return;
+					}
+					var chips = e[0].M_Chips.chipsData;
+					var chipIndex = chips.length - 1;
+					var playerName = chips[chipIndex].tag;
+					fetch(
+						"https://playerdb.co/api/player/minecraft/" + playerName
+					).then(function (res) {
+						res.json().then(function (json) {
+							ignoreNextDelete = true;
+							playerFilterInstance.deleteChip(chipIndex);
+							if (!json.error) {
+								ignoreNextPlayer = true;
+								playerFilterInstance.addChip({
+									tag: json.data.player.username,
+									image: json.data.player.avatar,
+									uuid: json.data.player.id
+								});
+								filterArgs.requiredPlayers.add(playerName.toLowerCase());
+								requiredPlayersUuid.add(json.data.player.id);
+								dataView.refresh();
+							}
+						});
+					});
+				},
+				onChipDelete: function (e) {
+					if (ignoreNextDelete) {
+						ignoreNextDelete = false;
+						return;
+					}
+					filterArgs.requiredPlayers.clear();
+					requiredPlayersUuid.clear();
+					e[0].M_Chips.chipsData.forEach(function (player) {
+						filterArgs.requiredPlayers.add(player.tag.toLowerCase());
+						requiredPlayersUuid.add(player.uuid);
+					});
+					dataView.refresh();
+				}
+			});
+
+			var gameplayTypesFilter = document.getElementById("gameplayTypesFilter");
+			M.Chips.init(gameplayTypesFilter, {
+				placeholder: "Gameplay Types",
+				onChipAdd: function (e) {
+					var chips = e[0].M_Chips.chipsData;
+					var gameplayType = chips[chips.length - 1].tag;
+					filterArgs.requiredGameplayTypes.add(gameplayType.toLowerCase());
+					dataView.refresh();
+				},
+				onChipDelete: function (e) {
+					filterArgs.requiredGameplayTypes.clear();
+					e[0].M_Chips.chipsData.forEach(function (type) {
+						filterArgs.requiredGameplayTypes.add(type.tag.toLowerCase());
+					});
+					dataView.refresh();
+				},
+				autocompleteOptions: {
+					data: {
+						"XRAY": null,
+						"SEE_ONE_CHUNK": null,
+						"TNT": null,
+						"MANHUNT": null,
+						"ACCELERATION": null,
+						"DROP": null,
+						"DROP_QUANITIES": null,
+						"PEARL": null,
+						"AIR_TELEPORT": null,
+						"MOB_SPAWNS": null,
+						"RANDOM_WALK": null,
+						"ALWAYS_MOVING": null,
+						"SPRINT_SPEED": null,
+						"LOOT_MOBS": null,
+						"BLOCK_SPEED": null,
+						"ONLY_PLACE": null,
+						"ALWAYS_SWIM": null,
+						"FLY": null,
+						"PIG": null,
+						"HORSE": null,
+						"JUMP_BOOST": null,
+						"ELYTRA": null,
+						"LAVA": null,
+						"TNT_FALL": null,
+						"DOUBLE_JUMP": null,
+						"FIRE_RAIN": null,
+						"RANDOM_ORE": null,
+						"GRAVITY": null,
+						"EVERY_30_SECONDS": null,
+						"RISING_LAVA": null,
+						"RISING_WATER": null,
+						"MOUNTAIN_AIR": null,
+						"MULTIPLIED_CRAFTING": null,
+						"EARN_WALK": null,
+					},
+					limit: Infinity,
+					minLength: 1
+				}
+			});
+
+			var uploadedStartFilter = document.getElementById("uploadedStartFilter");
+			var uploadedStartFilterInstance = M.Datepicker.init(uploadedStartFilter, {
+				showClearBtn: true,
+				onClose: function () {
+					if (!uploadedStartFilterInstance.date) {
+						filterArgs.uploadedStart = 0;
+					} else {
+						filterArgs.uploadedStart = uploadedStartFilterInstance.date.getTime();
+					}
+					dataView.refresh();
+				}
+			});
+
+			var uploadedEndFilter = document.getElementById("uploadedEndFilter");
+			var uploadedEndFilterInstance = M.Datepicker.init(uploadedEndFilter, {
+				showClearBtn: true,
+				onClose: function () {
+					if (!uploadedEndFilterInstance.date) {
+						filterArgs.uploadedEnd = Infinity;
+					} else {
+						filterArgs.uploadedEnd = uploadedEndFilterInstance.date.getTime();
+					}
+					dataView.refresh();
+				}
+			});
+
+			var lengthFilter = document.getElementById("lengthFilter");
+			noUiSlider.create(lengthFilter, {
+				start: [0, 1728000],
+				connect: true,
+				step: 1,
+				orientation: "horizontal",
+				range: {
+					min: 0,
+					"10%": 1200,
+					"50%": 36000,
+					"75%": 216000,
+					max: 1728000
+				},
+				tooltips: [{
+					to: (v) => (Math.floor(v / 20) + "\nSeconds"),
+					from: (v) => (Math.floor(v / 20) + "\nSeconds")
+				}, {
+					to: (v) => (Math.floor(v / 20) + "\nSeconds"),
+					from: (v) => (Math.floor(v / 20) + "\nSeconds")
+				}],
+				format: {
+					to: (v) => v | 0,
+					from: (v) => v | 0
+				}
+			}).on("set", function (range) {
+				filterArgs.length = range;
+				dataView.refresh();
+			});
+
+			M.Collapsible.init(document.getElementById("filteringContainer"));
+
+			async function getUsernames(playerUuids) {
+				var usernames = []
+				for (var i = 0; i < playerUuids.length; i++) {
+					if (!cached_usernames[playerUuids[i]]) {
+						var response = await fetch(
+							"https://playerdb.co/api/player/minecraft/" +
+							playerUuids[i]);
+						var response = await response.json();
+						cached_usernames[playerUuids[i]] = response.data.player.username;
+					}
+					usernames.push(cached_usernames[playerUuids[i]]);
+				}
+				return usernames;
+			}
+
+			dataView.beginUpdate();
+			dataView.setItems(data);
+			dataView.setFilterArgs(filterArgs);
+			dataView.setFilter(replayFilter);
+			dataView.endUpdate();
+
+			var leaderboardSocket = new WebSocket("wss://tgrcode.com:9684");
+			var socketOpen = false;
+			registerCallbacks();
+
+			function registerCallbacks() {
+				leaderboardSocket.onmessage = async function (e) {
+					var res = JSON.parse(e.data);
+
+					if (res.flag == "recieve_one_replay") {
+						data.length = 0;
+
+						var item = res;
+						item.id = 0;
+						item.overworld_seed = BigInt(item.overworld_seed);
+						item.nether_seed = BigInt(item.nether_seed);
+						item.end_seed = BigInt(item.end_seed);
+
+						var usernames = await getUsernames(item.players);
+
+						item.players = usernames.join(",");
+						item.gameplay_types = item.gameplay_types.join(",");
+						data.push(item);
+
+						dataView.refresh();
+					}
+
+					if (res.flag == "recieve_multiple_replays") {
+						if (res.page == 0) {
+							data.length = 0;
+						}
+
+						for (var row = 0; row < res.replays.length; row++) {
+							var item = res.replays[row];
+
+							item.id = data.length;
+							item.overworld_seed = BigInt(item.overworld_seed);
+							item.nether_seed = BigInt(item.nether_seed);
+							item.end_seed = BigInt(item.end_seed);
+
+							var usernames = await getUsernames(item.players);
+
+							item.players = usernames.join(",");
+							item.gameplay_types = item.gameplay_types.join(",");
+							data.push(item);
+						}
+
+						dataView.refresh();
+					}
+
+					if (res.flag == "recieve_online") {
+						var playersOnlineTable = document.getElementById("playersOnline");
+
+						// Remove existing entries
+						var rows = playersOnlineTable.getElementsByTagName("tr");
+						while (rows.length > 0) {
+							rows[0].parentNode.removeChild(rows[0]);
+						}
+
+						for (var i = 0; i < res.players.length; i++) {
+							var uuid = res.players[i];
+
+							var response = await fetch(
+								"https://playerdb.co/api/player/minecraft/" +
+								uuid);
+							var response = await response.json();
+
+							var playerRow = document.createElement("tr");
+							var usernameCell = document.createElement("td");
+							var pictureCell = document.createElement("td");
+							usernameCell.innerHTML = response.data.player.username;
+							pictureCell.innerHTML = "<img src='" + response.data.player.avatar +
+								"' width='100%'>";
+							playerRow.appendChild(pictureCell);
+							playerRow.appendChild(usernameCell);
+
+							playersOnlineTable.appendChild(playerRow);
+						}
+					}
+				}
+
+				leaderboardSocket.onopen = function () {
+					socketOpen = true;
+					leaderboardSocket.send(JSON.stringify({
+						flag: "request_records",
+						page: 0
+					}));
+
+					leaderboardSocket.send(JSON.stringify({
+						flag: "request_online"
+					}));
+					setInterval(function () {
+						leaderboardSocket.send(JSON.stringify({
+							flag: "request_online"
+						}));
+					}, 1000 * 5);
+				}
+
+				//leaderboardSocket.onclose = function tryReconnect() {
+				//	socketOpen = false;
+				//	console.error("Socket closed, trying reconnect");
+				//	leaderboardSocket = new WebSocket("wss://tgrcode.com:9684");
+				//	registerCallbacks();
+				//	setTimeout(function () {
+				//		if (!socketOpen) {
+				//			leaderboardSocket.close();
+				//			tryReconnect();
+				//		}
+				//	}, 5000);
+				//}
+			}
+		});
+	</script>
+</body>
+
+</html>
