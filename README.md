@@ -1,5 +1,6 @@
 # NewRun
 
+## [Leaderboard](https://tgrcode.com/newrun/)
 ![logo](images/newrun.png)
 
 A spigot plugin that allows for playing over 50 different challenges and saving them to replays you can view whenever you want. Every challenge is saved to an online leaderboard viewable anywhere.
