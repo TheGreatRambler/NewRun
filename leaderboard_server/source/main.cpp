@@ -71,12 +71,6 @@ int main(int argc, char* argv[]) {
 		"Runs in tandem with the site to store various data for retrieval");
 	// clang-format off
 		commandLineOptions.add_options ()
-			// https://github.com/jarro2783/cxxopts
-			("l,list", "List all connected gamepads")
-			("b,buttons", "Print the names of gamepad keys to use in config.json")
-			("f,fancy", "Use an extra fancy UI")
-			("i,inputs", "Display inputs in real time, requires fancy UI")
-			("c,config", "Set the path of the config file")
 			("h,help", "Print usage");
 	// clang-format on
 	cxxopts::ParseResult commandLineResult
